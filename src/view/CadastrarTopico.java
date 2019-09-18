@@ -1,12 +1,17 @@
+package view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+
+import dao.TopicoDAO;
+import dto.TopicoDTO;
 
 public class CadastrarTopico extends JFrame {
 
@@ -37,7 +42,21 @@ public class CadastrarTopico extends JFrame {
 		
 		btnCadastrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-	
+				//cria objeto do tipo TopicoDTO com o nome do topico passado
+				TopicoDTO topicoDTO = new TopicoDTO(textField.getText().toLowerCase());
+				//objeto para executar sql de insert no bd
+				TopicoDAO topicoDAO = new TopicoDAO();
+				//metodo para realizar insert no BD
+				topicoDAO.insert(topicoDTO);
+				
+				//exibe resultado na tela
+				JOptionPane.showMessageDialog(null, "Tópico cadastrado com sucesso" ,"Tópico cadastrado",
+						JOptionPane.INFORMATION_MESSAGE);	
+				
+				Main frame = new Main();
+				frame.setVisible(true);
+				dispose();				
+				
 			}
 		});		
 		
