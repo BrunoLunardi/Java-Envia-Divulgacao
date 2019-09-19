@@ -12,8 +12,11 @@ public class Publisher {
 	
 	//String que enviará a conta para o outro sistema
     String mensagemEnviaConta;
+    //string para topicos
+    String topico;
     //construtor da classe para enviar a mensagem
-	public Publisher(String mensagemEnviaConta){
+	public Publisher(String topico, String mensagemEnviaConta){
+		this.topico = topico;
 		this.mensagemEnviaConta = mensagemEnviaConta;
 	}
     
@@ -31,7 +34,7 @@ public class Publisher {
 			//Payload, conteudo da mensagem montagem da mensagem que será enviada ao broker
 		menssagem.setPayload(mensagemEnviaConta.getBytes());
 	    //Publica a mensagem, com seu tópico (para alguém se escrever neste tópico) e a mensagem montada
-	    client.publish("enviar_conta", menssagem);
+	    client.publish(topico, menssagem);
 	    //fecha conexão com broker mosquitto
 	    client.disconnect();
 	}	
