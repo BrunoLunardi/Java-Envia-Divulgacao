@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 import dao.TopicoDAO;
 import dto.TopicoDTO;
@@ -104,7 +103,9 @@ public class EnviarMensagem extends JFrame{
 				//chamada para validar campos para aceitarem apenas número
 				if( ValidarCampoNumerico(textValor) ) { 
 					System.out.println(textValor.getText() + " " + 
-							topicoSelecionado );
+							topicoSelecionado + " " +
+							area.getText()
+							);
 
 					//monta a string que será enviada para o broker
 					String mensagem =  
@@ -118,9 +119,9 @@ public class EnviarMensagem extends JFrame{
 					try {
 						//chama método da classe Publihser para enviar a mensagem
 						publisher.enviarMensagem();	
-					}catch(MqttException e) {
+					}catch(Exception e) {
 						//imprime exceção no console
-						System.out.println(e);
+						//System.out.println(e);
 					}					
 					
 				}				

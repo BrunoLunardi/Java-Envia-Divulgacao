@@ -1,42 +1,72 @@
 package pub_sub;
 
-//Imports para utilizar o protocolo MQTT
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageProducer;
+import javax.jms.DeliveryMode;
+import javax.jms.Message;
+import javax.jms.TopicConnectionFactory;
+import javax.jms.TopicPublisher;
+import javax.jms.TopicSession;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.Connection;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import configs.ConfigServer;
 
 
 public class Publisher {
 	
 	//String que enviará a conta para o outro sistema
-    String mensagemEnviaConta;
+    String payload;
     //string para topicos
     String topico;
     //construtor da classe para enviar a mensagem
-	public Publisher(String topico, String mensagemEnviaConta){
+	public Publisher(String topico, String payload){
 		this.topico = topico;
-		this.mensagemEnviaConta = mensagemEnviaConta;
+		this.payload = payload;
 	}
     
 	//Método para enviar a mensagem para o mosquitto
-	public void enviarMensagem() throws MqttException {
-		//Local para onde será enviado a mensagem (broker)
-		ConfigServer configServer = new ConfigServer();
-		//MqttClient client = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
-		MqttClient client = new MqttClient(configServer.getEnderecoServidor(), 
-				MqttClient.generateClientId());
-		//abre conexão com o broker (Mosquitto)
-		client.connect();
-		//objeto de envio de mensagem do broker
-		MqttMessage menssagem = new MqttMessage();
-			//Payload, conteudo da mensagem montagem da mensagem que será enviada ao broker
-		menssagem.setPayload(mensagemEnviaConta.getBytes());
-	    //Publica a mensagem, com seu tópico (para alguém se escrever neste tópico) e a mensagem montada
-	    client.publish(topico, menssagem);
-	    //fecha conexão com broker mosquitto
-	    client.disconnect();
+	public void enviarMensagem() throws Exception {
+Connection connection = null;
+		
+        ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
+                "tcp://localhost:61616");
+
+        //cria conexão
+        connection = connectionFactory.createConnection();
+		
+        //cria sessão
+        Session session = connection.createSession(false,
+                Session.AUTO_ACKNOWLEDGE);
+        
+        //cria tópico para enviar mensagem nele
+        Topic topic = session.createTopic(topico); 
+        
+        //inicia conexão para envio de mensagem
+        connection.start(); 
+        //payload da mensagem
+        Message msg = session.createTextMessage(payload);
+        //cria tópico
+        MessageProducer producer = session.createProducer(topic);
+        
+        System.out.println("Sending text '" + payload + "'");
+        //envia mensagem
+        producer.send(msg);
+         
+        Thread.sleep(3000);
+        //Fecha conexão
+        session.close();        
+        
+        connection.close();
 	}	
 
 }

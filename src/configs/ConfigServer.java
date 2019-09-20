@@ -1,7 +1,7 @@
 package configs;
 
 public class ConfigServer {
-	String enderecoServidor = "tcp://localhost:1883";
+	String enderecoServidor = "tcp://localhost:61616";
 	//recupera endereco ip
 	public String getEnderecoServidor() {
 		return enderecoServidor;
